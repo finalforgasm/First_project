@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style> 
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #981b1b;
+        }
+
+        #alarmTime {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        #message {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        #alarms {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .alarm {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .alarm-time {
+            flex-grow: 1;
+        }
+
+        .alarm-actions {
+            flex-basis: 30%;
+        }
+
+        .snooze-button {
+            background-color: #110000;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>MY ALARM</h1>
+
+    <label for="timeInput">Set Alarm Time:</label>
+    <input type="time" id="timeInput">
+    <button onclick="setAlarm()">Set Alarm</button>
+
+    <p id="message"></p>
+    <button id="dismissButton" onclick="dismissAlarm()">Dismiss</button>
+
+    <audio id="alarmSound" src="alarm.mp3" preload="auto"></audio>
+
+    <script>
+        let alarmTimeout;
+
+        function setAlarm() {
+            const timeInput = document.getElementById('timeInput').value;
+            
+            if (!timeInput) {
+                alert('Please enter a valid time.');
+                return;
+            }
+            const alarmTime = new Date();
+            const [hours, minutes] = timeInput.split(':');
+            alarmTime.setHours(parseInt(hours, 10));
+            alarmTime.setMinutes(parseInt(minutes, 10));
+            alarmTime.setSeconds(0);
+
+            const now = new Date();
+            const timeDifference = alarmTime - now;
+
+            if (timeDifference <= 0) {
+                alert('Please select a future time for the alarm.');
+                return;
+            }
+            if (alarmTimeout) {
+                clearTimeout(alarmTimeout);
+            }
+            alarmTimeout = setTimeout(() => {
+                triggerAlarm();
+            }, timeDifference);
+            document.getElementById('dismissButton').style.display = 'block';
+        }
+        function triggerAlarm() {
+            const messageElement = document.getElementById('message');
+            const dismissButton = document.getElementById('dismissButton');
+            const alarmSound = document.getElementById('alarmSound');
+
+            messageElement.textContent = 'Alarm! Wake up!';
+            alarmSound.play();
+            dismissButton.style.display = 'block';
+        }
+        function dismissAlarm() {
+            const messageElement = document.getElementById('message');
+            const dismissButton = document.getElementById('dismissButton');
+            const alarmSound = document.getElementById('alarmSound');
+
+            messageElement.textContent = '';
+            dismissButton.style.display = 'none';
+            alarmSound.pause();
+            alarmSound.currentTime = 0;
+        }
+    </script>
+</body>
+</html>
